@@ -5,7 +5,7 @@
 ![GitHub](https://img.shields.io/github/license/FrendsPlatform/Frends.Oracle?label=License)
 ![Coverage](https://app-github-custom-badges.azurewebsites.net/Badge?key=FrendsPlatform/Frends.Oracle/Frends.Oracle.ExecuteQuery|main)
 
-Frends task for executing queries in Oracle database.
+Frends task for executing queries and non queries in Oracle database.
 
 ## Installing
 
