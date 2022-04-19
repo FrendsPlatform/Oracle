@@ -14,6 +14,7 @@ jobs:
     uses: FrendsPlatform/FrendsTasks/.github/workflows/build_test.yml@main
     with:
       workdir: Frends.Oracle.ExecuteQuery
+      env_var_name_1: HiQ_OracleDb_connectionString
     secrets:
       badge_service_api_key: ${{ secrets.BADGE_SERVICE_API_KEY }}
       test_feed_api_key: ${{ secrets.TASKS_TEST_FEED_API_KEY }}
