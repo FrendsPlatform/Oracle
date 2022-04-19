@@ -1,9 +1,7 @@
 ﻿using Oracle.ManagedDataAccess.Client;
+using Oracle.ManagedDataAccess.Types;
 using System.ComponentModel;
 using Frends.Oracle.ExecuteQuery.Definitions;
-using System.Data;
-using System.Globalization;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 #pragma warning disable 1591
@@ -20,102 +18,72 @@ namespace Frends.Oracle.ExecuteQuery
         /// <param name="connection">Properties to establish connection to Oracle databse</param>
         /// <param name="properties">Properties for the query to be executed</param>
         /// <param name="options">Task options</param>
-        /// <returns>Object { bool success, string Message, string Output }</returns>
-        public static async Task<Result> ExecuteQuery([PropertyTab] ConnectionProperties connection, [PropertyTab] QueryProperties properties, [PropertyTab] Options options, CancellationToken cancellationToken)
+        /// <returns>Object { bool Success, int RowsAffected, List Output }</returns>
+        public static Result ExecuteQuery([PropertyTab] ConnectionProperties connection, [PropertyTab] QueryProperties properties, [PropertyTab] Options options, CancellationToken cancellationToken)
         {
+            var rows = new List<JObject>();
+            int rowsAffected = 0;
+
             try
             {
-                using (var con = new OracleConnection(connection.ConnectionString))
+                using (OracleConnection con = new OracleConnection(connection.ConnectionString))
                 {
-                    try
-                    {
-                        await con.OpenAsync(cancellationToken);
+                    con.Open();
 
-                        using (var command = new OracleCommand(properties.Query, con))
+                    var command = con.CreateCommand();
+
+                    command.CommandTimeout = connection.TimeoutSeconds;
+
+                    command.CommandText = properties.Query;
+                    command.BindByName = options.BindParameterByName;
+
+                    if (properties.Parameters != null)
+                        command.Parameters.AddRange(properties.Parameters.Select(p => CreateOracleParameter(p)).ToArray());
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
                         {
-                            command.CommandTimeout = connection.TimeoutSeconds;
+                            var jsonObject = new JObject();
+                            for (var i = 0; i < reader.FieldCount; i++)
+                            {
+                                cancellationToken.ThrowIfCancellationRequested();
+                                jsonObject.Add(reader.GetName(i), reader.GetValue(i).ToString());
 
-                            if (properties.Parameters != null)
-                                command.Parameters.AddRange(properties.Parameters.Select(p => CreateOracleParameter(p)).ToArray());
-
-                            command.CommandType = CommandType.Text;
-
-                            var queryResult = await ToJTokenAsync(command, cancellationToken);
-                            return new Result(true, "Successful query executed.", queryResult);
+                            }
+                            rows.Add(jsonObject);
                         }
-                    } catch (Exception ex) { throw ex; }
-                    finally
-                    {
-                        con.Close();
-                        con.Dispose();
-                        OracleConnection.ClearPool(con);
+
+                        // select query returns -1 that is converted into 0
+                        rowsAffected = (reader.RecordsAffected == -1) ? 0 : reader.RecordsAffected;
+                        reader.Close();
+                        reader.Dispose();
                     }
+
+                    command.Dispose();
+
+                    con.Close();
+                    con.Dispose();
                 }
-            }
+                return new QueryResult(true, rowsAffected, rows);
+            } 
             catch (Exception ex)
             {
                 if (options.ThrowErrorOnFailure)
-                    throw ex;
-                return new Result(false, ex.Message, null);
+                    throw new Exception(ex.Message);
+
+                return new ErrorResult(false, ex.Message);
             }
         }
 
-        private static async Task<JToken> ToJTokenAsync(OracleCommand command, CancellationToken cancellationToken)
-        {
-            command.CommandType = CommandType.Text;
-
-            using (var reader = await command.ExecuteReaderAsync(cancellationToken) as OracleDataReader)
-            {
-                var culture = CultureInfo.InvariantCulture;
-
-                using (var writer = new JTokenWriter() as JsonWriter)
-                {
-                    await writer.WriteStartArrayAsync(cancellationToken);
-
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    while (reader != null && reader.Read())
-                    {
-                        // start row object
-                        await writer.WriteStartObjectAsync(cancellationToken);
-
-                        for (var i = 0; i < reader.FieldCount; i++)
-                        {
-                            // add row element name
-                            await writer.WritePropertyNameAsync(reader.GetName(i), cancellationToken);
-                            await writer.WriteValueAsync(reader.GetValue(i) ?? string.Empty, cancellationToken);
-
-                            cancellationToken.ThrowIfCancellationRequested();
-                        }
-
-                    }
-
-                    // end array
-                    await writer.WriteEndArrayAsync(cancellationToken);
-
-                    return ((JTokenWriter)writer).Token;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Oracle parameters.
-        /// </summary>
         private static OracleParameter CreateOracleParameter(QueryParameter parameter)
         {
-
             return new OracleParameter()
             {
-                ParameterName = parameter.Name,
+                ParameterName = parameter.Name, 
                 Value = parameter.Value,
-                OracleDbType = ConvertEnum<OracleDbType>(parameter.DataType)
+                OracleDbType = (OracleDbType)Enum.Parse(typeof(OracleDbType), parameter.DataType.ToString())
             };
-
-        }
-
-        private static TEnum ConvertEnum<TEnum>(Enum source)
-        {
-            return (TEnum)Enum.Parse(typeof(TEnum), source.ToString(), true);
         }
     }
 }

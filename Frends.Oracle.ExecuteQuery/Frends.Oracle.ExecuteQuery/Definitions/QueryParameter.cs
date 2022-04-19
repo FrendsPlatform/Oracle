@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
+#pragma warning disable 1591
+
 namespace Frends.Oracle.ExecuteQuery.Definitions
 {
     /// <summary>
@@ -23,9 +25,10 @@ namespace Frends.Oracle.ExecuteQuery.Definitions
         public dynamic Value { get; set; }
 
         /// <summary>
-        /// The type of the parameter.
+        /// The data type of the parameter
         /// </summary>
         [DefaultValue(QueryParameterType.NVarchar2)]
         public QueryParameterType DataType { get; set; }
+
     }
 }
