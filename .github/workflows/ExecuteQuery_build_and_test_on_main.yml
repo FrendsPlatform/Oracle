@@ -16,3 +16,4 @@ jobs:
       workdir: Frends.Oracle.ExecuteQuery
     secrets:
       badge_service_api_key: ${{ secrets.BADGE_SERVICE_API_KEY }}
+      env_var_value_1: ${{ secrets.HIQ_ORACLEDB_CONNECTIONSTRING }}
