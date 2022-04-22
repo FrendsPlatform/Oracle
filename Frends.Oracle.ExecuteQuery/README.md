@@ -9,7 +9,7 @@ Frends task for executing queries in Oracle database.
 
 ## Installing
 
-You can install the task via FRENDS UI Task View or you can find the NuGet package from the following NuGet feed
+You can install the task via FRENDS UI Task View or you can find the NuGet package from the following NuGet feed.
 
 # Building
 

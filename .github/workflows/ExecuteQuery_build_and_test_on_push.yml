@@ -13,11 +13,11 @@ jobs:
   run:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - name: script
-        run: |
-          chmod +x ./build/deploy_oracle_docker_container.sh
-        shell: bash
+    - uses: actions/checkout@v1
+    - name: script
+      run: |
+        chmod +x .Frends.Oracle.ExecuteQuery/Frends.Oracle.ExecuteQuery/build/deploy_oracle_docker_container.sh
+      shell: bash
   build:
     uses: FrendsPlatform/FrendsTasks/.github/workflows/build_test.yml@main
     with:
