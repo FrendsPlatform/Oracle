@@ -7,15 +7,17 @@ using Newtonsoft.Json.Linq;
 
 namespace Frends.Oracle.ExecuteQuery.Tests
 {
+    /// <summary>
+    /// Docker container for Oracle database is needed to run these tests
+    /// To create a docker container go go to the build folder and
+    /// run ./deploy_oracle_docker_container.sh
+    /// Script might take a while (even 30 minutes) so relax.
+    /// </summary>
     [TestFixture]
     class TestClass
     {
         /// <summary>
         /// Connection string for Oracle database.
-        /// Docker container for Oracle database is needed to run these tests
-        /// To create a docker container go go to the build folder and
-        /// run ./deploy_oracle_docker_container.sh
-        /// Script might take a while (even 30 minutes) so relax.
         /// </summary>
         // private static string _connectionString = Environment.GetEnvironmentVariable("HiQ_OracleDb_connectionString");
         private static string _connectionString = "Data Source = (DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 51521))(CONNECT_DATA = (SERVICE_NAME = XEPDB1))); User Id = sys; Password=mysecurepassword; DBA PRIVILEGE=SYSDBA";
