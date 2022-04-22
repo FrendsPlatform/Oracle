@@ -11,6 +11,7 @@ namespace Frends.Oracle.ExecuteQuery.Definitions
         /// <summary>
         /// Query to be executed in string format.
         /// </summary>
+        /// <example>"SELECT ColumnName FROM TableName"</example>
         [DisplayFormat(DataFormatString = "Text")]
         [DefaultValue("SELECT ColumnName FROM TableName")]
         public string Query { get; set; }
@@ -18,6 +19,7 @@ namespace Frends.Oracle.ExecuteQuery.Definitions
         /// <summary>
         /// Parameters for the database query.
         /// </summary>
+        /// <example>{ Name = "name", Value = "Matti", DataType = QueryParameterType.Varchar2 }</example>
         public QueryParameter[] Parameters { get; set; }
     }
 }

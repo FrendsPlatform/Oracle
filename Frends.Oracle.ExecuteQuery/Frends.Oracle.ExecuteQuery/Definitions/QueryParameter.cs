@@ -1,8 +1,6 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-#pragma warning disable 1591
-
 namespace Frends.Oracle.ExecuteQuery.Definitions
 {
     /// <summary>
@@ -13,6 +11,7 @@ namespace Frends.Oracle.ExecuteQuery.Definitions
         /// <summary>
         /// The name of the parameter.
         /// </summary>
+        /// <example>"first_name"</example>
         [DefaultValue("ParameterName")]
         [DisplayFormat(DataFormatString = "Text")]
         public string Name { get; set; }
@@ -20,6 +19,7 @@ namespace Frends.Oracle.ExecuteQuery.Definitions
         /// <summary>
         /// The value of the parameter.
         /// </summary>
+        /// <example>"Saija"</example>
         [DefaultValue("Parameter value")]
         [DisplayFormat(DataFormatString = "Text")]
         public dynamic Value { get; set; }
@@ -27,6 +27,7 @@ namespace Frends.Oracle.ExecuteQuery.Definitions
         /// <summary>
         /// The data type of the parameter
         /// </summary>
+        /// <example>QueryParameterType.NVarchar2</example>
         [DefaultValue(QueryParameterType.NVarchar2)]
         public QueryParameterType DataType { get; set; }
 
