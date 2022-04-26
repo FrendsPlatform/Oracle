@@ -8,18 +8,21 @@ using Newtonsoft.Json.Linq;
 namespace Frends.Oracle.ExecuteQuery.Tests
 {
     /// <summary>
-    /// Docker container for Oracle database is needed to run these tests
-    /// To create a docker container go go to the build folder and
-    /// run ./deploy_oracle_docker_container.sh
+    /// Docker container for Oracle database is needed to run these tests.
+    /// You need to have Docker installed before hand.
+    /// To create a docker container follow these instructions on Git CLI:
+    /// cd Frends.Oracle
+    /// ./Frends.Oracle.ExecuteQuery/build/deploy_oracle_docker_container.sh
     /// Script might take a while (even 30 minutes) so relax.
+    /// To confirm that the container is up and running use Docker desktop or CLI. 
     /// </summary>
     [TestFixture]
+    //[Ignore("Tests needs new Ubuntu based workflow")]
     class TestClass
     {
         /// <summary>
         /// Connection string for Oracle database.
         /// </summary>
-        // private static string _connectionString = Environment.GetEnvironmentVariable("HiQ_OracleDb_connectionString");
         private static string _connectionString = "Data Source = (DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 51521))(CONNECT_DATA = (SERVICE_NAME = XEPDB1))); User Id = sys; Password=mysecurepassword; DBA PRIVILEGE=SYSDBA";
         private static int _connectionTimeout = 30;
 

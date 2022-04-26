@@ -16,7 +16,7 @@ jobs:
     - uses: actions/checkout@v1
     - name: script
       run: |
-        chmod +x ../build/deploy_oracle_docker_container.sh
+        chmod +x ./Frends.Oracle.ExecuteQuery/build/deploy_oracle_docker_container.sh
       shell: bash
   build:
     uses: FrendsPlatform/FrendsTasks/.github/workflows/build_main.yml@main
