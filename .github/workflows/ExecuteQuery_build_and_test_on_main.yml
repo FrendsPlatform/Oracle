@@ -10,19 +10,19 @@ on:
   
 
 jobs:
-  run:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v1
-    - name: script
-      run: |
-        chmod +x ./Frends.Oracle.ExecuteQuery/build/deploy_oracle_docker_container.sh
-      shell: bash
+#  run:
+#    runs-on: ubuntu-latest
+#    steps:
+#    - uses: actions/checkout@v1
+#    - name: script
+#     run: |
+#        chmod +x ./Frends.Oracle.ExecuteQuery/build/deploy_oracle_docker_container.sh
+#      shell: bash
   build:
     uses: FrendsPlatform/FrendsTasks/.github/workflows/build_main.yml@main
     with:
       workdir: Frends.Oracle.ExecuteQuery
-      env_var_name_1: HiQ_OracleDb_connectionString
+#      env_var_name_1: HiQ_OracleDb_connectionString
     secrets:
       badge_service_api_key: ${{ secrets.BADGE_SERVICE_API_KEY }}
       
