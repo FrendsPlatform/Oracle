@@ -11,8 +11,8 @@ namespace Frends.Oracle.ExecuteQuery.Tests
     /// Docker container for Oracle database is needed to run these tests.
     /// You need to have Docker installed before hand.
     /// To create a docker container follow these instructions on Git CLI:
-    /// cd Frends.Oracle
-    /// ./Frends.Oracle.ExecuteQuery/build/deploy_oracle_docker_container.sh
+    /// cd Frends.Oracle/Frends.Oracle.ExecuteQuery/build
+    /// ./deploy_oracle_docker_container.sh
     /// Script might take a while (even 30 minutes) so relax.
     /// To confirm that the container is up and running use Docker desktop or CLI. 
     /// </summary>
