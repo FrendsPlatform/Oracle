@@ -17,7 +17,7 @@ namespace Frends.Oracle.ExecuteQuery.Tests
     /// To confirm that the container is up and running use Docker desktop or CLI. 
     /// </summary>
     [TestFixture]
-    //[Ignore("Tests needs new Ubuntu based workflow")]
+    [Ignore("Tests needs new Ubuntu based workflow")]
     class TestClass
     {
         /// <summary>
