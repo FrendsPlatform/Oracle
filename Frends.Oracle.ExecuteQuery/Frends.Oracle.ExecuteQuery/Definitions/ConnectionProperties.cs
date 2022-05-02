@@ -11,7 +11,7 @@ namespace Frends.Oracle.ExecuteQuery.Definitions
         /// <summary>
         /// Oracle connection string.
         /// </summary>
-        [DisplayFormat(DataFormatString = "Text")]
+        [PasswordPropertyText]
         [DefaultValue("Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=MyHost)(PORT=MyPort))(CONNECT_DATA=(SERVICE_NAME=MyOracleSID)));User Id=myUsername;Password=myPassword;")]
         public string ConnectionString { get; set; }
 

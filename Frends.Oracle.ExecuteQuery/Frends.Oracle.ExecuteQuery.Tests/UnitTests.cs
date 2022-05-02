@@ -8,13 +8,7 @@ using Newtonsoft.Json.Linq;
 namespace Frends.Oracle.ExecuteQuery.Tests
 {
     /// <summary>
-    /// Docker container for Oracle database is needed to run these tests.
-    /// You need to have Docker installed before hand.
-    /// To create a docker container follow these instructions on Git CLI:
-    /// cd Frends.Oracle/Frends.Oracle.ExecuteQuery/build
-    /// ./deploy_oracle_docker_container.sh
-    /// Script might take a while (even 30 minutes) so relax.
-    /// To confirm that the container is up and running use Docker desktop or CLI. 
+    /// Oracle test database is needed to run these test. 
     /// </summary>
     [TestFixture]
     [Ignore("Tests needs new Ubuntu based workflow")]
@@ -23,7 +17,7 @@ namespace Frends.Oracle.ExecuteQuery.Tests
         /// <summary>
         /// Connection string for Oracle database.
         /// </summary>
-        private static string _connectionString = "Data Source = (DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 51521))(CONNECT_DATA = (SERVICE_NAME = XEPDB1))); User Id = sys; Password=mysecurepassword; DBA PRIVILEGE=SYSDBA";
+        private static string _connectionString = Environment.GetEnvironmentVariable("HiQ_OracleDb_connectionString");
         private static int _connectionTimeout = 30;
 
         /// <summary>
@@ -33,7 +27,7 @@ namespace Frends.Oracle.ExecuteQuery.Tests
         private static QueryProperties _queryProperties;
         private static Options _options;
 
-        [SetUp]
+        [OneTimeSetUp]
         public void SetUp()
         {
             _connectionProperties = new ConnectionProperties { ConnectionString = _connectionString, TimeoutSeconds = _connectionTimeout };
@@ -51,7 +45,7 @@ namespace Frends.Oracle.ExecuteQuery.Tests
             Oracle.ExecuteQuery(_connectionProperties, _queryProperties, _options, new CancellationToken());
         }
 
-        [TearDown]
+        [OneTimeTearDown]
         public void TearDown()
         {
             _connectionProperties = new ConnectionProperties { ConnectionString = _connectionString, TimeoutSeconds = _connectionTimeout };
@@ -67,6 +61,7 @@ namespace Frends.Oracle.ExecuteQuery.Tests
         [Test]
         public void ExecuteQuery_InsertWithParameters()
         {
+            ClearTable();
             _queryProperties = new QueryProperties
             {
                 Query = "insert " +
@@ -97,6 +92,7 @@ namespace Frends.Oracle.ExecuteQuery.Tests
         [Test]
         public void ExecuteQuery_WithAllValues()
         {
+            ClearTable();
             _queryProperties = new QueryProperties
             {
                 Query = "insert " +
@@ -111,6 +107,7 @@ namespace Frends.Oracle.ExecuteQuery.Tests
         [Test]
         public void ExecuteQuery_InsertMultipleRowsIntoTable()
         {
+            ClearTable();
             _queryProperties = new QueryProperties
             {
                 Query = "insert all " +
@@ -143,6 +140,7 @@ namespace Frends.Oracle.ExecuteQuery.Tests
         [Test]
         public void ExecuteQuery_InsertMultipleRowsWithMultipleParameters()
         {
+            ClearTable();
             _queryProperties = new QueryProperties
             {
                 Query = "insert all " +
@@ -169,6 +167,7 @@ namespace Frends.Oracle.ExecuteQuery.Tests
         [Test]
         public void ExecuteQuery_Update()
         {
+            ClearTable();
             _queryProperties = new QueryProperties
             {
                 Query = "insert " +
@@ -202,6 +201,7 @@ namespace Frends.Oracle.ExecuteQuery.Tests
         [Test]
         public void ExecuteQuery_SelectWithNonExistingRow()
         {
+            ClearTable();
             _queryProperties = new QueryProperties
             {
                 Query = "insert " +
@@ -226,7 +226,7 @@ namespace Frends.Oracle.ExecuteQuery.Tests
         [Test]
         public void ExecuteQuery_WithoutThrowErrorOnFailure()
         {
-
+            ClearTable();
             _options = new Options { ThrowErrorOnFailure = false };
 
             _queryProperties = new QueryProperties
@@ -244,6 +244,7 @@ namespace Frends.Oracle.ExecuteQuery.Tests
         [Test]
         public void ExecuteQuery_ThatThrowsException()
         {
+            ClearTable();
             _queryProperties = new QueryProperties
             {
                 Query = "insert " +
@@ -257,6 +258,7 @@ namespace Frends.Oracle.ExecuteQuery.Tests
         [Test]
         public void ExecuteQuery_InsertWithBindParameterByNameFalse()
         {
+            ClearTable();
             _options.BindParameterByName = false;
             _queryProperties = new QueryProperties
             {
@@ -282,6 +284,19 @@ namespace Frends.Oracle.ExecuteQuery.Tests
             result = (QueryResult)Oracle.ExecuteQuery(_connectionProperties, _queryProperties, _options, new CancellationToken());
             Assert.AreEqual("Matti", result.Output[0]["FIRST_NAME"].ToString());
             Assert.AreEqual("Meikäläinen", result.Output[0]["LAST_NAME"].ToString());
+        }
+
+        /// <summary>
+        /// Helper method to clear Oracle database table workers
+        /// </summary>
+        public void ClearTable()
+        {
+            _options.BindParameterByName = true;
+            _queryProperties = new QueryProperties
+            {
+                Query = "delete from workers"
+            };
+            Oracle.ExecuteQuery(_connectionProperties, _queryProperties, _options, new CancellationToken());
         }
     }
 }

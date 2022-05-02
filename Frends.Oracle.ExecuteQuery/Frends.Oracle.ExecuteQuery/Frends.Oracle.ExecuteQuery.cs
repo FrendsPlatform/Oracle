@@ -20,7 +20,7 @@ namespace Frends.Oracle.ExecuteQuery
         /// <param name="properties">Properties for the query to be executed</param>
         /// <param name="options">Task options</param>
         /// <param name="cancellationToken">CancellationToken is given by Frends UI</param>
-        /// <returns>Object { bool Success, int RowsAffected, List Output }</returns>
+        /// <returns>Object { bool Success, int RowsAffected, List <JObject/> Output }</returns>
         public static Result ExecuteQuery([PropertyTab] ConnectionProperties connection, [PropertyTab] QueryProperties properties, [PropertyTab] Options options, CancellationToken cancellationToken)
         {
             var rows = new List<JObject>();

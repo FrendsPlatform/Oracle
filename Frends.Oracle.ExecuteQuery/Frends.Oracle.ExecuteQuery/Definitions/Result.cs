@@ -9,9 +9,6 @@
         /// Boolean value of success of the query 
         /// </summary>
         /// <example>true</example>
-        public bool Success { get; set; }
-
-        internal Result()
-        {}
-}
+        public bool Success { get; protected set; }
+    }
 }
