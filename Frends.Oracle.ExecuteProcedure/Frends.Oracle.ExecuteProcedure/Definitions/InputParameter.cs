@@ -24,7 +24,7 @@ public class InputParameter
     public dynamic Value { get; set; }
 
     /// <summary>
-    /// The data type of the parameter
+    /// The data type of the parameter.
     /// </summary>
     /// <example>QueryParameterType.NVarchar2</example>
     [DefaultValue(ProcedureParameterType.NVarchar2)]
