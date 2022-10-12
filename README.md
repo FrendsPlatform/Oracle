@@ -1,11 +1,11 @@
 # Frends.Oracle
 
-Frends tasks for executing queries and commands in Oracle database. 
+Frends tasks for executing queries and stored procedures in Oracle database. 
 
 # Tasks
 
 - [Frends.Oracle.ExecuteQuery](Frends.Oracle.ExecuteQuery/README.md)
-- [Frends.Oracle.ExecuteCommand](Frends.Oracle.ExecuteCommand/README.md)
+- [Frends.Oracle.ExecuteProcedure](Frends.Oracle.ExecuteProcedure/README.md)
 
 # Contributing
 When contributing to this repository, please first discuss the change you wish to make via issue, email, or any other method with the owners of this repository before making a change.
