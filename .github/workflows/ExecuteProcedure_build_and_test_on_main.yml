@@ -10,18 +10,11 @@ on:
   
 
 jobs:
-  deploy_container:
-    runs-on: ubuntu-latest
-    name: Run Oracle container script
-    steps:
-    - name: Script
-      run: ./Frends.Oracle.ExecuteProcedure/build/deploy_oracle_docker_container.sh
-      shell: bash
   build:
     uses: FrendsPlatform/FrendsTasks/.github/workflows/linux_build_main.yml@main
     with:
       workdir: Frends.Oracle.ExecuteProcedure
-      prebuild_command: docker-compose -f ./Frends.Oracle.ExecuteProcedure.Tests/docker-compose.yml up -d
+      prebuild_command: ./Frends.Oracle.ExecuteProcedure/build/deploy_oracle_docker_container.sh
     secrets:
       badge_service_api_key: ${{ secrets.BADGE_SERVICE_API_KEY }}
   

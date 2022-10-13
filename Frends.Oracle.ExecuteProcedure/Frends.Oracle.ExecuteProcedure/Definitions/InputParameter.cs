@@ -31,7 +31,7 @@ public class InputParameter
     public ProcedureParameterType DataType { get; set; }
 
     /// <summary>
-    /// Size of the parameter
+    /// Size of the parameter.
     /// </summary>
     /// <example>255</example>
     public int Size { get; set; }
