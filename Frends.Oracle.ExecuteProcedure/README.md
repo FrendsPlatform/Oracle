@@ -29,12 +29,6 @@ Run build script to get the Oracle image
 
 `.\build\deploy_oracle_docker_container.sh`
 
-`cd Frends.Oracle.ExecuteProcedure.Tests`
-
-Run the Docker compose file
-
-`docker-compose up -d`
-
 `dotnet test`
 
 ### Create a NuGet package
