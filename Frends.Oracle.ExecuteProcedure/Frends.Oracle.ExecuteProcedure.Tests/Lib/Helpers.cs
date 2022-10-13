@@ -7,6 +7,14 @@ internal static class Helpers
 {
     private static string _connectionStringSys = "Data Source = (DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 51521))(CONNECT_DATA = (SERVICE_NAME = XEPDB1))); User Id = sys; Password=mysecurepassword; DBA PRIVILEGE=SYSDBA";
 
+    internal static void TestConnectionBeforeRunningTests()
+    {
+        using var con = new OracleConnection(_connectionStringSys);
+        while (con.State != ConnectionState.Open)
+            con.Open();
+        con.Close();
+
+    }
     internal static void CreateTestTable(string connectionString)
     {
 

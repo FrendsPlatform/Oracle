@@ -8,4 +8,3 @@ cd ./_build/docker-images/OracleDatabase/SingleInstance/dockerfiles
 ./buildContainerImage.sh -v 18.4.0 -x
 
 docker-compose -f ../../../../../Frends.Oracle.ExecuteProcedure.Tests/docker-compose.yml up -d
-

@@ -26,7 +26,9 @@ public class ExecuteProcedureTestBase
             BindParameterByName = true
         };
 
-        Helpers.CreateTestUser();
+        Helpers.TestConnectionBeforeRunningTests();
+
+        Helpers.CreateTestUser();  
     }
 
     [OneTimeTearDown]
