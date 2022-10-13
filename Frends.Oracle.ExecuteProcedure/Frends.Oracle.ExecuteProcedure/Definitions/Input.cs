@@ -18,7 +18,7 @@ public class Input
     public string Command { get; set; }
 
     /// <summary>
-    /// Type of the command: Command or Stored Procedure
+    /// Type of the command: Command or Stored Procedure.
     /// </summary>
     /// <example>Type.StoredProcedure</example>
     [DefaultValue(OracleCommandType.StoredProcedure)]
