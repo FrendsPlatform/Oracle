@@ -6,7 +6,7 @@
 public class Result
 { 
     /// <summary>
-    /// Boolean value of success of the query 
+    /// Boolean value of success of the query.
     /// </summary>
     /// <example>true</example>
     public bool Success { get; private set; }
