@@ -17,7 +17,7 @@ public class Output
     public OracleCommandReturnType DataReturnType { get; set; }
 
     /// <summary>
-    /// Parameters for the output of the procedure.
+    /// Parameters for the output of the procedure or command.
     /// </summary>
     /// <example>{ Name = "name", DataType = QueryParameterType.Varchar2 }</example>
     public OutputParameter[] OutputParameters { get; set; }
