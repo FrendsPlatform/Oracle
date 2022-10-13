@@ -25,7 +25,7 @@ Rebuild the project
 
 `cd Frends.Oracle.ExecuteProcedure`
 
-Run build script to get the Oracle image
+Run deploy script on git bash. This will download Oracle image and deploy the container.
 
 `.\build\deploy_oracle_docker_container.sh`
 
