@@ -8,16 +8,14 @@ namespace Frends.Oracle.ExecuteProcedure.Tests;
 
 internal static class Helpers
 {
-    private static string _connectionStringSys = "Data Source = (DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 51521))(CONNECT_DATA = (SERVICE_NAME = XEPDB1))); User Id = sys; Password=mysecurepassword; DBA PRIVILEGE=SYSDBA";
-
     /// <summary>
     /// This methods waits for the docker container to be ready. 
     /// Method tests connection 20 times and if connection can't be made, it waits for a minute after every attempt
     /// and tries again. This is needed for the CI for it to wait for the container to be ready.
     /// </summary>
-    internal static void TestConnectionBeforeRunningTests()
+    internal static void TestConnectionBeforeRunningTests(string connectionString)
     {
-        using var con = new OracleConnection(_connectionStringSys);
+        using var con = new OracleConnection(connectionString);
         foreach (var i in Enumerable.Range(1, 15))
         {
             try { con.Open(); }

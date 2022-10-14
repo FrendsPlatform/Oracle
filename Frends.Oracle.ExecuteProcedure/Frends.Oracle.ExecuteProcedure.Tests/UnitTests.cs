@@ -32,7 +32,7 @@ class UnitTests
             BindParameterByName = true
         };
 
-        Helpers.TestConnectionBeforeRunningTests();
+        Helpers.TestConnectionBeforeRunningTests(_connectionStringSys);
 
         using var con = new OracleConnection(_connectionStringSys);
         con.Open();
