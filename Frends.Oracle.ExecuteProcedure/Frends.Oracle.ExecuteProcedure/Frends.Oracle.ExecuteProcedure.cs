@@ -35,7 +35,7 @@ public class Oracle
         try
         {
             using OracleConnection con = new OracleConnection(connection.ConnectionString);
-            await con.OpenAsync();
+            await con.OpenAsync(cancellationToken);
 
             using var command = new OracleCommand();
 
@@ -54,7 +54,6 @@ public class Oracle
             command.BindByName = options.BindParameterByName;
 
             var runCommand = command.ExecuteNonQueryAsync(cancellationToken);
-            cancellationToken.ThrowIfCancellationRequested();
 
             if (runCommand.IsFaulted)
             {
@@ -151,9 +150,7 @@ public class Oracle
             xelem.Value = reader.ReadToEnd();
         }
         else
-        {
             xelem.Value = parameter.Value.ToString();
-        }
         return xelem;
     }
 }

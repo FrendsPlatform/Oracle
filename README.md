@@ -1,6 +1,6 @@
 # Frends.Oracle
 
-Frends tasks for executing queries and stored procedures in Oracle database. 
+Frends Tasks for executing queries and stored procedures in Oracle database. 
 
 # Tasks
 

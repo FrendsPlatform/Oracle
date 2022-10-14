@@ -5,11 +5,11 @@
 ![GitHub](https://img.shields.io/github/license/FrendsPlatform/Frends.Oracle?label=License)
 ![Coverage](https://app-github-custom-badges.azurewebsites.net/Badge?key=FrendsPlatform/Frends.Oracle/Frends.Oracle.ExecuteProcedure|main)
 
-Frends task for executing stored procedures in Oracle database.
+Frends Task for executing stored procedures in Oracle database.
 
 ## Installing
 
-You can install the task via FRENDS UI Task View or you can find the NuGet package from the following NuGet feed.
+You can install the Task via Frends UI Task View or you can find the NuGet package from the following NuGet feed.
 
 # Building
 
