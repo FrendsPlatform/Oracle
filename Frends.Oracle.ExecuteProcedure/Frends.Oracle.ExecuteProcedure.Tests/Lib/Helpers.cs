@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using System;
+using System.Data;
 using System.Threading;
 using System.Linq;
 using Oracle.ManagedDataAccess.Client;
@@ -9,10 +10,15 @@ internal static class Helpers
 {
     private static string _connectionStringSys = "Data Source = (DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 51521))(CONNECT_DATA = (SERVICE_NAME = XEPDB1))); User Id = sys; Password=mysecurepassword; DBA PRIVILEGE=SYSDBA";
 
+    /// <summary>
+    /// This methods waits for the docker container to be ready. 
+    /// Method tests connection 20 times and if connection can't be made, it waits for a minute after every attempt
+    /// and tries again. This is needed for the CI for it to wait for the container to be ready.
+    /// </summary>
     internal static void TestConnectionBeforeRunningTests()
     {
         using var con = new OracleConnection(_connectionStringSys);
-        foreach (var i in Enumerable.Range(1, 20))
+        foreach (var i in Enumerable.Range(1, 15))
         {
             try { con.Open(); }
             catch 
@@ -23,71 +29,51 @@ internal static class Helpers
                 Thread.Sleep(60000);
             }   
         }
+        if (con.State != ConnectionState.Open)
+            throw new Exception("Check that the docker container is up and running.");
         con.Close();
 
     }
-    internal static void CreateTestTable(string connectionString)
+    internal static void CreateTestTable(OracleConnection con)
     {
-
-        using var con = new OracleConnection(connectionString);
-        con.Open();
-
         using var cmd = con.CreateCommand();
         cmd.CommandType = CommandType.Text;
 
         cmd.CommandText = @"CREATE TABLE test_user.workers(id NUMBER, name VARCHAR2(100) NULL, address VARCHAR2(100) NULL, PRIMARY KEY(id))";
         cmd.ExecuteNonQuery();
-
-        con.Close();
     }
 
-    internal static void InsertTestData(string connectionString)
+    internal static void InsertTestData(OracleConnection con)
     {
-        using var con = new OracleConnection(connectionString);
-        con.Open();
-
         using var cmd = con.CreateCommand();
         cmd.CommandType = CommandType.Text;
 
         cmd.CommandText = @"INSERT INTO test_user.workers(id, name, address) VALUES (1, 'risto', 'haapatie 9')";
         cmd.ExecuteNonQuery();
-
-        con.Close();
     }
 
-    internal static void DropTestTable(string connectionString)
+    internal static void DropTestTable(OracleConnection con)
     {
-        using var con = new OracleConnection(connectionString);
-        con.Open();
-
         using var cmd = con.CreateCommand();
         cmd.CommandText = "drop table test_user.workers";
 
         cmd.CommandType = CommandType.Text;
 
         cmd.ExecuteNonQuery();
-        con.Close();
     }
 
-    internal static void DropProcedure(string connectionString, string name)
+    internal static void DropProcedure(OracleConnection con, string name)
     {
-        using var con = new OracleConnection(connectionString);
-        con.Open();
-
         using var cmd = con.CreateCommand();
-        cmd.CommandText = $"DROP PROCEDURE {name}";
+        cmd.CommandText = $"DROP PROCEDURE test_user.{name}";
 
         cmd.CommandType = CommandType.Text;
 
         cmd.ExecuteNonQuery();
-        con.Close();
     }
 
-    internal static void CreateTestUser()
+    internal static void CreateTestUser(OracleConnection con)
     {
-        using var con = new OracleConnection(_connectionStringSys);
-        con.Open();
-
         using var cmd = con.CreateCommand();
         cmd.CommandText = @"
 create or replace procedure p_create_user (par_username in varchar2) is
@@ -111,20 +97,23 @@ end;";
 begin
   p_create_user('test_user');
 end;";
-        cmd.ExecuteNonQuery();
-        con.Close();
+        try
+        {
+            cmd.ExecuteNonQuery();
+        }
+        catch
+        {
+            DropTestUser(con);
+            cmd.ExecuteNonQuery();
+        }
     }
 
-    internal static void DropTestUser()
+    internal static void DropTestUser(OracleConnection con)
     {
-        using var con = new OracleConnection(_connectionStringSys);
-        con.Open();
-
         using var cmd = con.CreateCommand();
         cmd.CommandType = CommandType.Text;
-        cmd.CommandText = "DROP USER test_user;";
+        cmd.CommandText = "DROP USER test_user CASCADE";
         cmd.ExecuteNonQuery();
-        con.Close();
     }
 }
 

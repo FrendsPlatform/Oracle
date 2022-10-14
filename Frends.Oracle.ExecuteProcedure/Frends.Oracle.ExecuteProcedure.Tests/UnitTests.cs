@@ -2,6 +2,7 @@ using NUnit.Framework;
 using System.Threading;
 using Frends.Oracle.ExecuteProcedure.Definitions;
 using System.Threading.Tasks;
+using Oracle.ManagedDataAccess.Client;
 
 namespace Frends.Oracle.ExecuteProcedure.Tests;
 
@@ -9,18 +10,31 @@ namespace Frends.Oracle.ExecuteProcedure.Tests;
 class UnitTests : ExecuteProcedureTestBase
 {
     private readonly string _proc = "unitestproc";
+
     [SetUp]
     public void Setup()
     {
-        Helpers.CreateTestTable(_connectionString);
-        Helpers.InsertTestData(_connectionString);
+        using var con = new OracleConnection(_connectionStringSys);
+        con.Open();
+        try
+        {
+            Helpers.CreateTestTable(con);
+            Helpers.InsertTestData(con);
+        }
+        finally { con.Close(); }
     }
 
     [TearDown]
     public void TearDown()
     {
-        Helpers.DropTestTable(_connectionString);
-        Helpers.DropProcedure(_connectionString, _proc);
+        using var con = new OracleConnection(_connectionStringSys);
+        con.Open();
+        try
+        {
+            Helpers.DropTestTable(con);
+            Helpers.DropProcedure(con, _proc);
+        }
+        finally { con.Close(); }
     }
 
     [Test]
