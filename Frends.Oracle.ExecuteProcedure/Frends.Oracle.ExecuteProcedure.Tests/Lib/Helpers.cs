@@ -1,4 +1,6 @@
 ﻿using System.Data;
+using System.Threading;
+using System.Linq;
 using Oracle.ManagedDataAccess.Client;
 
 namespace Frends.Oracle.ExecuteProcedure.Tests;
@@ -10,8 +12,17 @@ internal static class Helpers
     internal static void TestConnectionBeforeRunningTests()
     {
         using var con = new OracleConnection(_connectionStringSys);
-        while (con.State != ConnectionState.Open)
-            con.Open();
+        foreach (var i in Enumerable.Range(1, 20))
+        {
+            try { con.Open(); }
+            catch 
+            {
+                if (con.State == ConnectionState.Open)
+                    break;
+
+                Thread.Sleep(60000);
+            }   
+        }
         con.Close();
 
     }
