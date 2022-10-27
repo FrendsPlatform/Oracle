@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.1.0] - 2022-10-26
+## [1.1.0] - 2022-10-27
 ### Fixed
 - [Breaking] Simplified implementation and merged ConnectionProperties and QueryProperties classes into one Input class.
 - Changed the implementation to resemble other database related tasks.
