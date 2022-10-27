@@ -1,91 +1,133 @@
 ﻿using Oracle.ManagedDataAccess.Client;
+using System.Data;
+using System.Data.Common;
 using System.ComponentModel;
+using System.Globalization;
 using Frends.Oracle.ExecuteQuery.Definitions;
 using Newtonsoft.Json.Linq;
-using System.Runtime.CompilerServices;
+using Newtonsoft.Json;
 
-[assembly: InternalsVisibleTo("Frends.Oracle.ExecuteQuery.Tests")]
-namespace Frends.Oracle.ExecuteQuery
+
+namespace Frends.Oracle.ExecuteQuery;
+
+/// <summary>
+/// Task class
+/// </summary>
+public static class Oracle
 {
     /// <summary>
-    /// Task class
+    /// Task for performing queries in Oracle database.
+    /// [Documentation](https://tasks.frends.com/tasks/frends-tasks/Frends.Oracle.ExecuteQuery)
     /// </summary>
-    public class Oracle
+    /// <param name="input">Properties for the query to be executed</param>
+    /// <param name="options">Task options</param>
+    /// <param name="cancellationToken">CancellationToken is given by Frends UI</param>
+    /// <returns>Object { bool Success, string Message,  JToken.JObject[] Output }</returns>
+    public static async Task<Result> ExecuteQuery([PropertyTab] Input input, [PropertyTab] Options options, CancellationToken cancellationToken)
     {
-        /// <summary>
-        /// Task for performing queries in Oracle database.
-        /// [Documentation](https://tasks.frends.com/tasks#frends-tasks/Frends.Oracle.ExecuteQuery)
-        /// </summary>
-        /// <param name="connection">Properties to establish connection to Oracle databse</param>
-        /// <param name="properties">Properties for the query to be executed</param>
-        /// <param name="options">Task options</param>
-        /// <param name="cancellationToken">CancellationToken is given by Frends UI</param>
-        /// <returns>Object { bool Success, int RowsAffected, List <JObject/> Output }</returns>
-        public static Result ExecuteQuery([PropertyTab] ConnectionProperties connection, [PropertyTab] QueryProperties properties, [PropertyTab] Options options, CancellationToken cancellationToken)
+        try
         {
-            var rows = new List<JObject>();
-            int rowsAffected = 0;
+            using OracleConnection con = new OracleConnection(input.ConnectionString);
+            await con.OpenAsync(cancellationToken);
 
+            using var command = con.CreateCommand();
+            using var transaction = con.BeginTransaction(GetIsolationLevel(options.OracleIsolationLevel));
+            
+            command.Transaction = transaction;
+            command.CommandTimeout = options.TimeoutSeconds;
+            command.CommandText = input.Query;
+            command.BindByName = options.BindParameterByName;
+
+            if (input.Parameters != null)
+                command.Parameters.AddRange(input.Parameters.Select(p => CreateOracleParameter(p)).ToArray());
             try
             {
-                using (OracleConnection con = new OracleConnection(connection.ConnectionString))
+                // Execute query
+                if (input.Query.ToLower().StartsWith("select"))
                 {
-                    con.Open();
-
-                    var command = con.CreateCommand();
-
-                    command.CommandTimeout = connection.TimeoutSeconds;
-
-                    command.CommandText = properties.Query;
-                    command.BindByName = options.BindParameterByName;
-
-                    if (properties.Parameters != null)
-                        command.Parameters.AddRange(properties.Parameters.Select(p => CreateOracleParameter(p)).ToArray());
-
-                    using (var reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            var jsonObject = new JObject();
-                            for (var i = 0; i < reader.FieldCount; i++)
-                            {
-                                cancellationToken.ThrowIfCancellationRequested();
-                                jsonObject.Add(reader.GetName(i), reader.GetValue(i).ToString());
-
-                            }
-                            rows.Add(jsonObject);
-                        }
-
-                        // select query returns -1 that is converted into 0
-                        rowsAffected = (reader.RecordsAffected == -1) ? 0 : reader.RecordsAffected;
-                        reader.Close();
-                        reader.Dispose();
-                    }
-
-                    command.Dispose();
-
-                    con.Close();
-                    con.Dispose();
+                    var reader = await command.ExecuteReaderAsync(cancellationToken);
+                    var result = reader.ToJson(cancellationToken);
+                    await con.CloseAsync();
+                    return new Result(true, "Success", result);
                 }
-                return new QueryResult(true, rowsAffected, rows);
-            } 
+                else
+                {
+                    var rows = await command.ExecuteNonQueryAsync(cancellationToken);
+                    transaction.Commit();
+                    await con.CloseAsync();
+                    return new Result(true, "Success", JToken.FromObject(new { AffectedRows = rows }));
+                }
+            }
             catch (Exception ex)
             {
+                transaction.Rollback();
                 if (options.ThrowErrorOnFailure)
                     throw new Exception(ex.Message);
 
-                return new ErrorResult(false, ex.Message);
+                return new Result(false, ex.Message, null);
             }
+            finally
+            {
+                if (con.State == ConnectionState.Open)
+                    await con.CloseAsync();
+            }
+            
+        } 
+        catch (Exception ex)
+        {
+            if (options.ThrowErrorOnFailure)
+                throw new Exception(ex.Message);
+
+            return new Result(false, ex.Message, null);
+        }
+    }
+
+    private static OracleParameter CreateOracleParameter(QueryParameter parameter)
+    {
+        return new OracleParameter()
+        {
+            ParameterName = parameter.Name, 
+            Value = parameter.Value,
+            OracleDbType = (OracleDbType)Enum.Parse(typeof(OracleDbType), parameter.DataType.ToString())
+        };
+    }
+
+    private static JToken ToJson(this DbDataReader reader, CancellationToken cancellationToken)
+    {
+        using var writer = new JTokenWriter();
+        writer.Formatting = Formatting.Indented;
+        writer.Culture = CultureInfo.InvariantCulture; 
+
+        writer.WriteStartArray();
+
+        while (reader.Read())
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            writer.WriteStartObject();
+            for (var i = 0; i < reader.FieldCount; i++)
+            {
+                writer.WritePropertyName(reader.GetName(i));
+
+                writer.WriteValue(reader.GetValue(i) ?? string.Empty);
+            }
+            writer.WriteEndObject();
         }
 
-        private static OracleParameter CreateOracleParameter(QueryParameter parameter)
+        writer.WriteEndArray();
+        return writer.Token;
+    }
+
+    private static IsolationLevel GetIsolationLevel(TransactionIsolationLevel level)
+    {
+        return level switch
         {
-            return new OracleParameter()
-            {
-                ParameterName = parameter.Name, 
-                Value = parameter.Value,
-                OracleDbType = (OracleDbType)Enum.Parse(typeof(OracleDbType), parameter.DataType.ToString())
-            };
-        }
+            TransactionIsolationLevel.None => IsolationLevel.Unspecified,
+            TransactionIsolationLevel.ReadCommitted => IsolationLevel.ReadCommitted,
+            TransactionIsolationLevel.RepeatableRead => IsolationLevel.RepeatableRead,
+            TransactionIsolationLevel.Serializable => IsolationLevel.Serializable,
+            TransactionIsolationLevel.ReadUncommitted => IsolationLevel.ReadUncommitted,
+            TransactionIsolationLevel.Default => IsolationLevel.Serializable,
+            _ => IsolationLevel.Serializable,
+        };
     }
 }

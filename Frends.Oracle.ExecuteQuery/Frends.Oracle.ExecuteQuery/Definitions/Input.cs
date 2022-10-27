@@ -6,7 +6,7 @@ namespace Frends.Oracle.ExecuteQuery.Definitions
     /// <summary>
     /// Properties for the query to be executed.
     /// </summary>
-    public class QueryProperties
+    public class Input
     {
         /// <summary>
         /// Query to be executed in string format.
@@ -21,5 +21,13 @@ namespace Frends.Oracle.ExecuteQuery.Definitions
         /// </summary>
         /// <example>{ Name = "name", Value = "Matti", DataType = QueryParameterType.Varchar2 }</example>
         public QueryParameter[] Parameters { get; set; }
+
+        /// <summary>
+        /// Oracle connection string.
+        /// </summary>
+        [DisplayFormat(DataFormatString = "Text")]
+        [PasswordPropertyText]
+        [DefaultValue("Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=MyHost)(PORT=MyPort))(CONNECT_DATA=(SERVICE_NAME=MyOracleSID)));User Id=myUsername;Password=myPassword;")]
+        public string ConnectionString { get; set; }
     }
 }
