@@ -3,7 +3,7 @@ name: Frends.Oracle.ExecuteProcedure Test
 on:
   push:
     branches-ignore:    
-      - main
+      - master
     paths:
       - 'Frends.Oracle.ExecuteProcedure/**'
   workflow_dispatch:

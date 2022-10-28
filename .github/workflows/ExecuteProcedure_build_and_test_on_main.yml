@@ -3,7 +3,7 @@ name: Frends.Oracle.ExecuteProcedure Main
 on:
   push:
     branches:    
-      - main
+      - master
     paths:
       - 'Frends.Oracle.ExecuteProcedure/**'
   workflow_dispatch:
