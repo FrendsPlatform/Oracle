@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Frends.Oracle.ExecuteProcedure": {
+      "commandName": "Project",
+      "sqlDebugging": true
+    }
+  }
+}
