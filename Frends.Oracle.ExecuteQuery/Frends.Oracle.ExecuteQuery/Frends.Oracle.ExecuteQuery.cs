@@ -7,7 +7,6 @@ using Frends.Oracle.ExecuteQuery.Definitions;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 
-
 namespace Frends.Oracle.ExecuteQuery;
 
 /// <summary>
@@ -22,7 +21,7 @@ public static class Oracle
     /// <param name="input">Properties for the query to be executed</param>
     /// <param name="options">Task options</param>
     /// <param name="cancellationToken">CancellationToken is given by Frends UI</param>
-    /// <returns>Object { bool Success, string Message,  JToken.JObject[] Output }</returns>
+    /// <returns>Object { bool Success, string Message, JToken.JObject[] Output }</returns>
     public static async Task<Result> ExecuteQuery([PropertyTab] Input input, [PropertyTab] Options options, CancellationToken cancellationToken)
     {
         try
