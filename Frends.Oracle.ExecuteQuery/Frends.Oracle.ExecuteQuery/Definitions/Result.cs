@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
-
-namespace Frends.Oracle.ExecuteQuery.Definitions;
+﻿namespace Frends.Oracle.ExecuteQuery.Definitions;
 
 /// <summary>
 /// Return object with private setters.
