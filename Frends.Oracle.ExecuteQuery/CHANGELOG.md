@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.0.1] - 2022-11-04
+### Fixed
+- Fixed issue which resulted to task not able to close connection.
+
 ## [2.0.0] - 2022-10-31
 ### Fixed
 - [Breaking] Simplified implementation and merged ConnectionProperties and QueryProperties classes into one Input class.

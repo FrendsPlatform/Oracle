@@ -30,7 +30,6 @@ internal static class Helpers
         if (con.State != ConnectionState.Open)
             throw new Exception("Check that the docker container is up and running.");
         con.Close();
-
     }
 
     internal static void CreateTestTable(OracleConnection con)
@@ -97,7 +96,15 @@ end;";
         using var cmd = con.CreateCommand();
         cmd.CommandType = CommandType.Text;
         cmd.CommandText = "DROP USER test_user CASCADE";
-        var result = cmd.ExecuteNonQuery();
+        try
+        {
+            cmd.ExecuteNonQuery();
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            throw;
+        }
     }
 }
 
