@@ -12,7 +12,7 @@ public class Input
     /// Query to be executed in string format.
     /// </summary>
     /// <example>"SpGetResultsByAge"</example>
-    [DisplayFormat(DataFormatString = "Text")]
+    [DisplayFormat(DataFormatString = "Sql")]
     [DefaultValue("")]
     public string Command { get; set; }
 
@@ -28,4 +28,13 @@ public class Input
     /// </summary>
     /// <example>{ Name = "ParamName", Value = "1", DataType = QueryParameterType.NVarchar2 }</example>
     public InputParameter[] Parameters { get; set; }
+
+    /// <summary>
+    /// Oracle connection string.
+    /// </summary>
+    /// <example>"Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=MyHost)(PORT=MyPort))(CONNECT_DATA=(SERVICE_NAME=MyOracleSID)));User Id=myUsername;Password=myPassword;"</example>
+    [PasswordPropertyText]
+    [DisplayFormat(DataFormatString = "Text")]
+    [DefaultValue("Data Source=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=MyHost)(PORT=MyPort))(CONNECT_DATA=(SERVICE_NAME=MyOracleSID)));User Id=myUsername;Password=myPassword;")]
+    public string ConnectionString { get; set; }
 }

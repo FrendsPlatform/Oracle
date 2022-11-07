@@ -2,14 +2,11 @@
 using OracleParam = Oracle.ManagedDataAccess.Client.OracleParameter;
 using System.ComponentModel;
 using Frends.Oracle.ExecuteProcedure.Definitions;
-using System.Runtime.CompilerServices;
 using System.Data;
 using System.Text;
 using System.Xml.Linq;
 using Newtonsoft.Json;
 
-
-[assembly: InternalsVisibleTo("Frends.Oracle.ExecuteProcedure.Tests")]
 namespace Frends.Oracle.ExecuteProcedure;
 
 /// <summary>
@@ -21,28 +18,26 @@ public class Oracle
     /// Task for performing stored procedures in Oracle database.
     /// [Documentation](https://tasks.frends.com/tasks/frends-tasks/Frends.Oracle.ExecuteProcedure)
     /// </summary>
-    /// <param name="connection">Properties to establish connection to Oracle databse</param>
     /// <param name="input">Properties for the procedure to be executed</param>
     /// <param name="output">Properties for the output of the procedure.</param>
     /// <param name="options">Task options</param>
     /// <param name="cancellationToken">CancellationToken is given by Frends UI</param>
     /// <returns>Object { bool Success, int RowsAffected, IEnumerable Output }</returns>
-    public async static Task<Result> ExecuteProcedure([PropertyTab] Connection connection, [PropertyTab] Input input, [PropertyTab] Output output, [PropertyTab] Options options, CancellationToken cancellationToken)
+    public async static Task<Result> ExecuteProcedure([PropertyTab] Input input, [PropertyTab] Output output, [PropertyTab] Options options, CancellationToken cancellationToken)
     {
         IEnumerable<OracleParam> outputOracleParams = null;
         int rowsAffected = 0;
+        using OracleConnection con = new OracleConnection(input.ConnectionString);
 
         try
         {
-            using OracleConnection con = new OracleConnection(connection.ConnectionString);
             await con.OpenAsync(cancellationToken);
 
             using var command = new OracleCommand();
-
             command.Connection = con;
             command.CommandText = input.Command;
-            command.CommandTimeout = connection.TimeoutSeconds;
-            command.CommandType = (input.CommandType == Definitions.OracleCommandType.Command) ? CommandType.Text : CommandType.StoredProcedure;
+            command.CommandTimeout = options.TimeoutSeconds;
+            command.CommandType = (input.CommandType == OracleCommandType.Command) ? CommandType.Text : CommandType.StoredProcedure;
 
             // Add input parameters to the OracleCommand
             if (input.Parameters != null)
@@ -88,6 +83,11 @@ public class Oracle
                 throw new ArgumentException("Error when executing command:", ex.Message);
 
             return new Result(false, ex.Message);
+        }
+        finally
+        {
+            await con.CloseAsync();
+            OracleConnection.ClearAllPools();
         }
     }
 

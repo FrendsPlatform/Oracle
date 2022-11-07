@@ -16,6 +16,13 @@ public class Options
     public bool ThrowErrorOnFailure { get; set; }
 
     /// <summary>
+    /// Timeout value in seconds.
+    /// </summary>
+    /// <example>30</example>
+    [DefaultValue(30)]
+    public int TimeoutSeconds { get; set; }
+
+    /// <summary>
     /// Choose to bind the parameter by name.
     /// If set to false parameter order is crucial.
     /// </summary>

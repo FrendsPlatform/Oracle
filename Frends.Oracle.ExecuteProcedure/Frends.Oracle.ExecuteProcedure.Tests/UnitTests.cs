@@ -9,7 +9,7 @@ namespace Frends.Oracle.ExecuteProcedure.Tests;
 [TestFixture]
 class UnitTests
 {
-    private static Connection _con;
+    private static Input _input;
     private static Options _options;
 
     private readonly static string schema = "test_user";
@@ -20,15 +20,15 @@ class UnitTests
     [OneTimeSetUp]
     public void OneTimeSetup()
     {
-        _con = new Connection
+        _input = new Input
         {
             ConnectionString = _connectionString,
-            TimeoutSeconds = 30
         };
 
         _options = new Options
         {
             ThrowErrorOnFailure = true,
+            TimeoutSeconds = 30,
             BindParameterByName = true
         };
 
@@ -78,27 +78,24 @@ class UnitTests
     [Test]
     public async Task ExecuteProcedure_ProcedureJSONString()
     {
-        var input = new Input
-        {
-            Command = @$"
+        _input.Command = @$"
 create or replace procedure {_proc} (name in varchar2, address out varchar2) as
 begin
   select address into address from workers where name = name;
-end {_proc};",
-            CommandType = OracleCommandType.Command
-        };
+end {_proc};";
+        _input.CommandType = OracleCommandType.Command;
 
         var output = new Output
         {
             DataReturnType = OracleCommandReturnType.JSONString
         };
 
-        var result = await Oracle.ExecuteProcedure(_con, input, output, _options, new CancellationToken());
+        var result = await Oracle.ExecuteProcedure(_input, output, _options, new CancellationToken());
         Assert.IsTrue(result.Success);
 
-        input.Command = _proc;
-        input.CommandType = OracleCommandType.StoredProcedure;
-        input.Parameters = new InputParameter[]
+        _input.Command = _proc;
+        _input.CommandType = OracleCommandType.StoredProcedure;
+        _input.Parameters = new InputParameter[]
         {
             new InputParameter
             {
@@ -119,34 +116,31 @@ end {_proc};",
             }
         };
 
-        result = await Oracle.ExecuteProcedure(_con, input, output, _options, new CancellationToken());
+        result = await Oracle.ExecuteProcedure(_input, output, _options, new CancellationToken());
         Assert.IsTrue(result.Success);
     }
 
     [Test]
     public async Task ExecuteProcedure_ProcedureXmlString()
     {
-        var input = new Input
-        {
-            Command = @$"
+        _input.Command = @$"
 create or replace procedure {_proc} (name in varchar2, address out varchar2) as
 begin
   select address into address from workers where name = name;
-end {_proc};",
-            CommandType = OracleCommandType.Command
-        };
+end {_proc};";
+        _input.CommandType = OracleCommandType.Command;
 
         var output = new Output
         {
             DataReturnType = OracleCommandReturnType.XmlString
         };
 
-        var result = await Oracle.ExecuteProcedure(_con, input, output, _options, new CancellationToken());
+        var result = await Oracle.ExecuteProcedure(_input, output, _options, new CancellationToken());
         Assert.IsTrue(result.Success);
 
-        input.Command = _proc;
-        input.CommandType = OracleCommandType.StoredProcedure;
-        input.Parameters = new InputParameter[]
+        _input.Command = _proc;
+        _input.CommandType = OracleCommandType.StoredProcedure;
+        _input.Parameters = new InputParameter[]
         {
             new InputParameter
             {
@@ -167,34 +161,31 @@ end {_proc};",
             }
         };
 
-        result = await Oracle.ExecuteProcedure(_con, input, output, _options, new CancellationToken());
+        result = await Oracle.ExecuteProcedure(_input, output, _options, new CancellationToken());
         Assert.IsTrue(result.Success);
     }
 
     [Test]
     public async Task ExecuteProcedure_ProcedureXDocument()
     {
-        var input = new Input
-        {
-            Command = @$"
+        _input.Command = @$"
 create or replace procedure {_proc} (name in varchar2, address out varchar2) as
 begin
   select address into address from workers where name = name;
-end {_proc};",
-            CommandType = OracleCommandType.Command
-        };
+end {_proc};";
+        _input.CommandType = OracleCommandType.Command;
 
         var output = new Output
         {
             DataReturnType = OracleCommandReturnType.XDocument
         };
 
-        var result = await Oracle.ExecuteProcedure(_con, input, output, _options, new CancellationToken());
+        var result = await Oracle.ExecuteProcedure(_input, output, _options, new CancellationToken());
         Assert.IsTrue(result.Success);
 
-        input.Command = _proc;
-        input.CommandType = OracleCommandType.StoredProcedure;
-        input.Parameters = new InputParameter[]
+        _input.Command = _proc;
+        _input.CommandType = OracleCommandType.StoredProcedure;
+        _input.Parameters = new InputParameter[]
         {
             new InputParameter
             {
@@ -215,34 +206,31 @@ end {_proc};",
             }
         };
 
-        result = await Oracle.ExecuteProcedure(_con, input, output, _options, new CancellationToken());
+        result = await Oracle.ExecuteProcedure(_input, output, _options, new CancellationToken());
         Assert.IsTrue(result.Success);
     }
 
     [Test]
     public async Task ExecuteProcedure_ProcedureParameters()
     {
-        var input = new Input
-        {
-            Command = @$"
+        _input.Command = @$"
 create or replace procedure {_proc} (name in varchar2, address out varchar2) as
 begin
   select address into address from workers where name = name;
-end {_proc};",
-            CommandType = OracleCommandType.Command
-        };
+end {_proc};";
+        _input.CommandType = OracleCommandType.Command;
 
         var output = new Output
         {
             DataReturnType = OracleCommandReturnType.Parameters
         };
 
-        var result = await Oracle.ExecuteProcedure(_con, input, output, _options, new CancellationToken());
+        var result = await Oracle.ExecuteProcedure(_input, output, _options, new CancellationToken());
         Assert.IsTrue(result.Success);
 
-        input.Command = _proc;
-        input.CommandType = OracleCommandType.StoredProcedure;
-        input.Parameters = new InputParameter[]
+        _input.Command = _proc;
+        _input.CommandType = OracleCommandType.StoredProcedure;
+        _input.Parameters = new InputParameter[]
         {
             new InputParameter
             {
@@ -263,34 +251,31 @@ end {_proc};",
             }
         };
 
-        result = await Oracle.ExecuteProcedure(_con, input, output, _options, new CancellationToken());
+        result = await Oracle.ExecuteProcedure(_input, output, _options, new CancellationToken());
         Assert.IsTrue(result.Success);
     }
 
     [Test]
     public async Task ExecuteProcedure_ProcedureAffectedRows()
     {
-        var input = new Input
-        {
-            Command = @$"
+        _input.Command = @$"
 create or replace procedure {_proc} (name in varchar2, address out varchar2) as
 begin
   select address into address from workers where name = name;
-end {_proc};",
-            CommandType = OracleCommandType.Command
-        };
+end {_proc};";
+        _input.CommandType = OracleCommandType.Command;
 
         var output = new Output
         {
             DataReturnType = OracleCommandReturnType.AffectedRows
         };
 
-        var result = await Oracle.ExecuteProcedure(_con, input, output, _options, new CancellationToken());
+        var result = await Oracle.ExecuteProcedure(_input, output, _options, new CancellationToken());
         Assert.IsTrue(result.Success);
 
-        input.Command = _proc;
-        input.CommandType = OracleCommandType.StoredProcedure;
-        input.Parameters = new InputParameter[]
+        _input.Command = _proc;
+        _input.CommandType = OracleCommandType.StoredProcedure;
+        _input.Parameters = new InputParameter[]
         {
             new InputParameter
             {
@@ -311,7 +296,7 @@ end {_proc};",
             }
         };
 
-        result = await Oracle.ExecuteProcedure(_con, input, output, _options, new CancellationToken());
+        result = await Oracle.ExecuteProcedure(_input, output, _options, new CancellationToken());
         Assert.IsTrue(result.Success);
     }
 
@@ -324,27 +309,24 @@ end {_proc};",
             ThrowErrorOnFailure = true
         };
 
-        var input = new Input
-        {
-            Command = @$"
+        _input.Command = @$"
 create or replace procedure {_proc} (name in varchar2, address out varchar2) as
 begin
   select address into address from workers where name = name;
-end {_proc};",
-            CommandType = OracleCommandType.Command
-        };
+end {_proc};";
+        _input.CommandType = OracleCommandType.Command;
 
         var output = new Output
         {
             DataReturnType = OracleCommandReturnType.JSONString
         };
 
-        var result = await Oracle.ExecuteProcedure(_con, input, output, options, new CancellationToken());
+        var result = await Oracle.ExecuteProcedure(_input, output, options, new CancellationToken());
         Assert.IsTrue(result.Success);
 
-        input.Command = _proc;
-        input.CommandType = OracleCommandType.StoredProcedure;
-        input.Parameters = new InputParameter[]
+        _input.Command = _proc;
+        _input.CommandType = OracleCommandType.StoredProcedure;
+        _input.Parameters = new InputParameter[]
         {
             new InputParameter
             {
@@ -365,7 +347,7 @@ end {_proc};",
             }
         };
 
-        result = await Oracle.ExecuteProcedure(_con, input, output, options, new CancellationToken());
+        result = await Oracle.ExecuteProcedure(_input, output, options, new CancellationToken());
         Assert.IsTrue(result.Success);
     }
 }
