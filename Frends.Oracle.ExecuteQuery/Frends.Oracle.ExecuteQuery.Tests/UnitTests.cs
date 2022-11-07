@@ -65,6 +65,7 @@ class TestClass
         {
             ThrowErrorOnFailure = true,
             BindParameterByName = true,
+            OracleIsolationLevel = TransactionIsolationLevel.Default,
             TimeoutSeconds = 30
         };
 
@@ -233,6 +234,14 @@ class TestClass
 
         var error = Assert.ThrowsAsync<Exception>(async () => await Oracle.ExecuteQuery(_input, _options, new CancellationToken()));
         Assert.AreEqual("ORA-01722: invalid number", error.Message);
+    }
+
+    [Test]
+    public void ExecuteQuery_ErrorTesting()
+    {
+        _input.Query = "SELECT NOW();";
+        var error = Assert.ThrowsAsync<Exception>(async () => await Oracle.ExecuteQuery(_input, _options, new CancellationToken()));
+        Assert.AreEqual("ORA-00923: FROM keyword not found where expected", error.Message);
     }
 
     [Test]

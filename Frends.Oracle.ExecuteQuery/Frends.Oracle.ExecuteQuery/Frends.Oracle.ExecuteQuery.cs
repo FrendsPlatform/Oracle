@@ -28,10 +28,9 @@ public static class Oracle
         {
             using OracleConnection con = new OracleConnection(input.ConnectionString);
             await con.OpenAsync(cancellationToken);
-
-            using var command = con.CreateCommand();
             using var transaction = con.BeginTransaction(GetIsolationLevel(options.OracleIsolationLevel));
-            
+            using var command = con.CreateCommand();
+
             command.Transaction = transaction;
             command.CommandTimeout = options.TimeoutSeconds;
             command.CommandText = input.Query;
@@ -52,7 +51,7 @@ public static class Oracle
                 else
                 {
                     var rows = await command.ExecuteNonQueryAsync(cancellationToken);
-                    transaction.Commit();
+                    await transaction.CommitAsync(cancellationToken);
                     await con.CloseAsync();
                     return new Result(true, "Success", JToken.FromObject(new { AffectedRows = rows }));
                 }
@@ -67,10 +66,9 @@ public static class Oracle
             }
             finally
             {
-                if (con.State == ConnectionState.Open)
-                    await con.CloseAsync();
-            }
-            
+                await con.CloseAsync();
+                con.Dispose();
+            }   
         } 
         catch (Exception ex)
         {
@@ -78,6 +76,10 @@ public static class Oracle
                 throw new Exception(ex.Message);
 
             return new Result(false, ex.Message, null);
+        }
+        finally
+        {
+            OracleConnection.ClearAllPools();
         }
     }
 
