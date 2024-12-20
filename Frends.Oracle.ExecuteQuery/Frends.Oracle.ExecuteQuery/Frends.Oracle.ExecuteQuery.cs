@@ -6,6 +6,7 @@ using System.Globalization;
 using Frends.Oracle.ExecuteQuery.Definitions;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 
 namespace Frends.Oracle.ExecuteQuery;
 
@@ -33,7 +34,7 @@ public static class Oracle
 
             command.Transaction = transaction;
             command.CommandTimeout = options.TimeoutSeconds;
-            command.CommandText = input.Query;
+            command.CommandText = Regex.Replace(input.Query, @"^\s*\/\*.*\*\/|^\s*--.*", string.Empty, RegexOptions.Multiline).TrimStart();
             command.BindByName = options.BindParameterByName;
 
             if (input.Parameters != null)
@@ -41,7 +42,7 @@ public static class Oracle
             try
             {
                 // Execute query
-                if (input.Query.ToLower().StartsWith("select"))
+                if (command.CommandText.ToLower().StartsWith("select"))
                 {
                     var reader = await command.ExecuteReaderAsync(cancellationToken);
                     var result = reader.ToJson(cancellationToken);
