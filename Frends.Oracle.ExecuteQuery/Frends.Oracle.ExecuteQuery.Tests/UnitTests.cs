@@ -208,7 +208,9 @@ class TestClass
         Assert.AreEqual(1, (int)result.Output["AffectedRows"]);
 
         _input.Query = @"
-        /* comment before */ 
+        /* comment before
+        more line
+         */ 
         --another comment
         select first_name 
         from workers 

@@ -34,7 +34,10 @@ public static class Oracle
 
             command.Transaction = transaction;
             command.CommandTimeout = options.TimeoutSeconds;
-            command.CommandText = Regex.Replace(input.Query, @"^\s*\/\*.*\*\/|^\s*--.*", string.Empty, RegexOptions.Multiline).TrimStart();
+            command.CommandText = Regex.Replace(input.Query,  
+                @"(^\s*\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\/)|(^\s*--.*)", 
+                string.Empty, 
+                RegexOptions.Multiline).TrimStart(); 
             command.BindByName = options.BindParameterByName;
 
             if (input.Parameters != null)
