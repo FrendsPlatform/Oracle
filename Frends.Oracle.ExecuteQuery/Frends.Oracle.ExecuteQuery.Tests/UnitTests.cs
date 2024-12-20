@@ -196,7 +196,8 @@ class TestClass
     }
 
     [Test]
-    public async Task ExecuteQueryWithCommentBeforeQuery(){
+    public async Task ExecuteQueryWithCommentBeforeQuery()
+    {
         _input.Query = @" 
         /*comment before */ 
          --another comment
@@ -205,7 +206,7 @@ class TestClass
 
         var result = await Oracle.ExecuteQuery(_input, _options, new CancellationToken());
         Assert.AreEqual(1, (int)result.Output["AffectedRows"]);
-      
+
         _input.Query = @"
         /* comment before */ 
         --another comment
