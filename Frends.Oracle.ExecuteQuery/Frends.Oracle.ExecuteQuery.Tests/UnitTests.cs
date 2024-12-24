@@ -93,7 +93,7 @@ class TestClass
     public async Task ExecuteQuery_InsertWithParameters()
     {
         _input.Query = "insert " +
-            "into workers (id, first_name, last_name) values (:id, :name, 'Meikäläinen')";
+            "into workers (id, first_name, last_name) values (:id, :name, 'Meikalainen')";
         _input.Parameters = new QueryParameter[]
         {
             new QueryParameter { Name = "name", Value = "Matti", DataType = QueryParameterType.Varchar2 },
@@ -115,7 +115,7 @@ class TestClass
     public async Task ExecuteQuery_WithAllValues()
     {
         _input.Query = "insert " +
-            "into workers values (1, 'Matti', 'Meikäläinen', DATE '2022-04-12')";
+            "into workers values (1, 'Matti', 'Meikalainen', DATE '2022-04-12')";
         var result = await Oracle.ExecuteQuery(_input, _options, new CancellationToken());
         Assert.IsNotNull(result);
         Assert.AreEqual(true, result.Success);
@@ -126,8 +126,8 @@ class TestClass
     public async Task ExecuteQuery_InsertMultipleRowsIntoTable()
     {
         _input.Query = "insert all " +
-            "into workers (id, first_name, last_name) values (1, 'Matti', 'Meikäläinen') " +
-            "into workers (id, first_name, last_name) values (2, 'Teppo', 'Teikäläinen') " +
+            "into workers (id, first_name, last_name) values (1, 'Matti', 'Meikalainen') " +
+            "into workers (id, first_name, last_name) values (2, 'Teppo', 'Teikalainen') " +
             "select * from dual";
 
         var result = await Oracle.ExecuteQuery(_input, _options, new CancellationToken());
@@ -146,7 +146,7 @@ class TestClass
         Assert.That(result, Is.Not.Null);
         Assert.AreEqual(true, result.Success);
         Assert.AreEqual("Matti", (string)result.Output[0]["FIRST_NAME"]);
-        Assert.AreEqual("Meikäläinen", (string)result.Output[0]["LAST_NAME"]);
+        Assert.AreEqual("Meikalainen", (string)result.Output[0]["LAST_NAME"]);
     }
 
     [Test]
@@ -160,10 +160,10 @@ class TestClass
         {
             new QueryParameter { Name = "id1", Value = 1, DataType = QueryParameterType.Int32 },
             new QueryParameter { Name = "fname1", Value = "Matti", DataType = QueryParameterType.Varchar2 },
-            new QueryParameter { Name = "lname1", Value ="Meikäläinen", DataType = QueryParameterType.Varchar2 },
+            new QueryParameter { Name = "lname1", Value ="Meikalainen", DataType = QueryParameterType.Varchar2 },
             new QueryParameter { Name = "id2", Value = 2, DataType = QueryParameterType.Int32 },
             new QueryParameter { Name = "fname2", Value = "Teppo", DataType = QueryParameterType.Varchar2 },
-            new QueryParameter { Name = "lname2", Value = "Teikäläinen", DataType = QueryParameterType.Varchar2 }
+            new QueryParameter { Name = "lname2", Value = "Teikalainen", DataType = QueryParameterType.Varchar2 }
         };
 
         var result = await Oracle.ExecuteQuery(_input, _options, new CancellationToken());
@@ -176,7 +176,7 @@ class TestClass
     public async Task ExecuteQuery_Update()
     {
         _input.Query = "insert " +
-            "into workers (id, first_name, last_name) values (1, 'Matti', 'Meikäläinen')";
+            "into workers (id, first_name, last_name) values (1, 'Matti', 'Meikalainen')";
 
         var result = await Oracle.ExecuteQuery(_input, _options, new CancellationToken());
         Assert.AreEqual(1, (int)result.Output["AffectedRows"]);
@@ -196,10 +196,35 @@ class TestClass
     }
 
     [Test]
+    public async Task ExecuteQueryWithCommentBeforeQuery()
+    {
+        _input.Query = @" 
+        /*comment before */ 
+         --another comment
+        insert into workers (id, first_name, last_name)
+        values (1, 'Matti', 'Doe')";
+
+        var result = await Oracle.ExecuteQuery(_input, _options, new CancellationToken());
+        Assert.AreEqual(1, (int)result.Output["AffectedRows"]);
+
+        _input.Query = @"
+        /* comment before
+        more line
+         */ 
+        --another comment
+        select first_name 
+        from workers 
+        where id = 1";
+
+        result = await Oracle.ExecuteQuery(_input, _options, new CancellationToken());
+        Assert.AreEqual("Matti", (string)result.Output[0]["FIRST_NAME"]);
+    }
+
+    [Test]
     public async Task ExecuteQuery_SelectWithNonExistingRow()
     {
         _input.Query = "insert " +
-            "into workers (id, first_name, last_name) values (1, 'Matti', 'Meikäläinen')";
+            "into workers (id, first_name, last_name) values (1, 'Matti', 'Meikalainen')";
 
         var result = await Oracle.ExecuteQuery(_input, _options, new CancellationToken());
         Assert.AreEqual(1, (int)result.Output["AffectedRows"]);
@@ -218,7 +243,7 @@ class TestClass
         _options.ThrowErrorOnFailure = false;
 
         _input.Query = "insert " +
-            "into workers (id, first_name, last_name) values ('Matti', 1, 'Meikäläinen')";
+            "into workers (id, first_name, last_name) values ('Matti', 1, 'Meikalainen')";
 
         var result = await Oracle.ExecuteQuery(_input, _options, new CancellationToken());
         Assert.That(result, Is.Not.Null);
@@ -230,7 +255,7 @@ class TestClass
     public void ExecuteQuery_ThatThrowsException()
     {
         _input.Query = "insert " +
-            "into workers (id, first_name, last_name) values ('Matti', 1, 'Meikäläinen')";
+            "into workers (id, first_name, last_name) values ('Matti', 1, 'Meikalainen')";
 
         var error = Assert.ThrowsAsync<Exception>(async () => await Oracle.ExecuteQuery(_input, _options, new CancellationToken()));
         Assert.AreEqual("ORA-01722: invalid number", error.Message);
@@ -254,7 +279,7 @@ class TestClass
         {
             new QueryParameter { Name = "p", Value = 1, DataType = QueryParameterType.Int32 },
             new QueryParameter { Name = "p", Value = "Matti", DataType = QueryParameterType.Varchar2 },
-            new QueryParameter { Name = "p", Value ="Meikäläinen", DataType = QueryParameterType.Varchar2 },
+            new QueryParameter { Name = "p", Value ="Meikalainen", DataType = QueryParameterType.Varchar2 },
         };
 
         var result = await Oracle.ExecuteQuery(_input, _options, new CancellationToken());
@@ -266,7 +291,7 @@ class TestClass
 
         result = await Oracle.ExecuteQuery(_input, _options, new CancellationToken());
         Assert.AreEqual("Matti", (string)result.Output[0]["FIRST_NAME"]);
-        Assert.AreEqual("Meikäläinen", (string)result.Output[0]["LAST_NAME"]);
+        Assert.AreEqual("Meikalainen", (string)result.Output[0]["LAST_NAME"]);
     }
 }
 

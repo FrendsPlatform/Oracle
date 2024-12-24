@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.0.2] - 2024-12-24
+### Fixed
+- Fixed an issue where comments before queries disrupted proper execution.
+
 ## [2.0.1] - 2022-11-04
 ### Fixed
 - Fixed issue which resulted to task not able to close connection.
